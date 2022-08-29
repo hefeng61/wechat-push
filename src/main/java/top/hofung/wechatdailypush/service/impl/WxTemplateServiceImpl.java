@@ -4,12 +4,18 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.mp.api.WxMpService;
+import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
+import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
+import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
 import org.springframework.stereotype.Service;
-import top.hofung.wechatdailypush.config.WechatConfig;
-import top.hofung.wechatdailypush.domain.WxTemplate;
+import top.hofung.wechatdailypush.domain.LiveWeather;
 import top.hofung.wechatdailypush.service.WxTemplateService;
+import top.hofung.wechatdailypush.util.EssayUtil;
+import top.hofung.wechatdailypush.util.WeahterUtil;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -25,25 +31,29 @@ public class WxTemplateServiceImpl implements WxTemplateService {
 
     private static final String SECRET = "af9e4d84d7e690c027ab0ba2ed8b8773";
 
-    private static final String openid = "";
+    private static final String OPENID = "oAHa45va5Dx3hQ5xKYfCTjvHOdG0";
+
+//    private static final String OPENID = "oAHa45ur28eiWIdRjCv13sUzIZkY";
+
+    public static final String TEMPLATE_ID = "_9uFKE24cDr0nJ6khEDM5pNfwJbNBwY1H6HVdbRhJIY";
 
     @Override
-    public void sendTemplate(WxTemplate template) {
-        String accessToken;
-        if (cache().getIfPresent(ACCESS_TOKEN) == null) {
-            accessToken = getAccessToken();
-        } else {
-            accessToken = (String) cache().getIfPresent(ACCESS_TOKEN);
+    public void sendTemplate() {
+
+        //1，配置
+        WxMpDefaultConfigImpl wxStorage = new WxMpDefaultConfigImpl();
+        wxStorage.setAppId(APPID);
+        wxStorage.setSecret(SECRET);
+        WxMpService wxMpService = new WxMpServiceImpl();
+        wxMpService.setWxMpConfigStorage(wxStorage);
+
+        try {
+            String s = wxMpService.getTemplateMsgService().sendTemplateMsg(this.wxMpTemplateMessage());
+            System.out.println(s);
+        } catch (WxErrorException e) {
+            throw new RuntimeException(e);
         }
 
-//        HttpUtil.post(String.format(wechatConfig.getTemplatePushApi(), accessToken),)
-    }
-
-    public String getAccessToken() {
-        String res = HttpUtil.get(String.format(ACCESS_TOKEN_API, APPID, SECRET));
-        String accessToken = JSONUtil.parseObj(res).getStr(ACCESS_TOKEN);
-        cache().put(ACCESS_TOKEN, accessToken);
-        return accessToken;
     }
 
     /**
@@ -58,11 +68,38 @@ public class WxTemplateServiceImpl implements WxTemplateService {
                 .build();
     }
 
-    public WxTemplate buildTemplate() {
-        WxTemplate template = new WxTemplate();
-        template.setTouser("oAHa45va5Dx3hQ5xKYfCTjvHOdG0");
-        template.setTemplate_id("xl5WVcUPzZn3FhMDXZ8vnVAjB0ui121-ID5fK6x-oFs");
-//        template.setData();
-        return null;
+    public WxMpTemplateMessage wxMpTemplateMessage() {
+        LiveWeather weather = WeahterUtil.getLiveWeatherInfo();
+        List<String> list = EssayUtil.getEssay();
+        WxMpTemplateMessage templateMessage = WxMpTemplateMessage.builder()
+                .toUser(OPENID)
+                .templateId(TEMPLATE_ID)
+                .url("https://api.dujin.org/bing/m.php")
+                .build();
+
+        getWeatherTemplate(templateMessage);
+        return templateMessage;
     }
+
+    private void getWeatherTemplate(WxMpTemplateMessage templateMessage) {
+        LiveWeather weather = WeahterUtil.getLiveWeatherInfo();
+        List<String> list = EssayUtil.getEssay();
+        templateMessage.addData(new WxMpTemplateData("name", "盼盼", "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("fxDate", weather.getFxDate(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("sunrise", weather.getSunrise(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("sunset", weather.getSunset(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("moonrise", weather.getMoonrise(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("moonset", weather.getMoonset(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("moonPhase", weather.getMoonPhase(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("tempMax", weather.getTempMax(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("tempMin", weather.getTempMin(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("textDay", weather.getTextDay(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("textNight", weather.getTextNight(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("windDirDay", weather.getWindDirDay(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("windScaleDay", weather.getWindScaleDay(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("humidity", weather.getHumidity(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("uvIndex", weather.getUvIndex(), "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("essay", list.get(0)));
+    }
+
 }

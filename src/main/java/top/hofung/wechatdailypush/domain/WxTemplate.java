@@ -14,7 +14,7 @@ public class WxTemplate implements Serializable {
 
     private String url;
 
-    private List<WeatherInfo> data;
+    private List<LiveWeather> data;
 
 
 }

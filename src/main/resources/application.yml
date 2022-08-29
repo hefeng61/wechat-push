@@ -3,14 +3,3 @@ spring:
     name: wechat-daily-push
 server:
   port: 9000
-
-#????????
-wechat:
-  appid: wxfbf0951089dbb3d3
-  appsecret: af9e4d84d7e690c027ab0ba2ed8b8773
-  access_token_api: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s
-  template_push_api: https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s
-
-#????????
-amap:
-  weather_info_api: https://restapi.amap.com/v3/weather/weatherInfo?key=%s&city=%s&extensions=%s&output=%s
