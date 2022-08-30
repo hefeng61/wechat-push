@@ -8,7 +8,7 @@ import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import top.hofung.wechatdailypush.WxConfig;
+import top.hofung.wechatdailypush.config.WxConfig;
 import top.hofung.wechatdailypush.domain.LiveWeather;
 import top.hofung.wechatdailypush.service.WxTemplateService;
 import top.hofung.wechatdailypush.util.EssayUtil;

@@ -1,4 +1,4 @@
-package top.hofung.wechatdailypush;
+package top.hofung.wechatdailypush.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
