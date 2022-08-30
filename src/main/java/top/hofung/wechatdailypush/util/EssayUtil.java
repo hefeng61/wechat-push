@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 获取ONE一句好
+ * 获取ONE一句话
  */
 public class EssayUtil {
 

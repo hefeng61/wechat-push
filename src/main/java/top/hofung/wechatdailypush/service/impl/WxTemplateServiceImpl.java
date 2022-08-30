@@ -1,49 +1,36 @@
 package top.hofung.wechatdailypush.service.impl;
 
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONUtil;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import top.hofung.wechatdailypush.WxConfig;
 import top.hofung.wechatdailypush.domain.LiveWeather;
 import top.hofung.wechatdailypush.service.WxTemplateService;
 import top.hofung.wechatdailypush.util.EssayUtil;
 import top.hofung.wechatdailypush.util.WeahterUtil;
 
+import javax.annotation.Resource;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class WxTemplateServiceImpl implements WxTemplateService {
-    public static final String ACCESS_TOKEN = "access_token";
 
-    private static final String ACCESS_TOKEN_API = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
-
-    private static final String TEMPLATE_PUSH_API = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=%s";
-
-    private static final String APPID = "wxfbf0951089dbb3d3";
-
-    private static final String SECRET = "af9e4d84d7e690c027ab0ba2ed8b8773";
-
-    private static final String OPENID = "oAHa45va5Dx3hQ5xKYfCTjvHOdG0";
-
-//    private static final String OPENID = "oAHa45ur28eiWIdRjCv13sUzIZkY";
-
-    public static final String TEMPLATE_ID = "_9uFKE24cDr0nJ6khEDM5pNfwJbNBwY1H6HVdbRhJIY";
+    @Resource
+    private WxConfig config;
 
     @Override
+    @Scheduled(cron = "0 0 8 * * ? ")
     public void sendTemplate() {
 
         //1，配置
         WxMpDefaultConfigImpl wxStorage = new WxMpDefaultConfigImpl();
-        wxStorage.setAppId(APPID);
-        wxStorage.setSecret(SECRET);
+        wxStorage.setAppId(config.getAppId());
+        wxStorage.setSecret(config.getSecret());
         WxMpService wxMpService = new WxMpServiceImpl();
         wxMpService.setWxMpConfigStorage(wxStorage);
 
@@ -56,24 +43,10 @@ public class WxTemplateServiceImpl implements WxTemplateService {
 
     }
 
-    /**
-     * 本地缓存
-     *
-     * @return
-     */
-    public Cache<String, Object> cache() {
-        return Caffeine.newBuilder()
-                .initialCapacity(100)
-                .expireAfterWrite(7200, TimeUnit.SECONDS)
-                .build();
-    }
-
     public WxMpTemplateMessage wxMpTemplateMessage() {
-        LiveWeather weather = WeahterUtil.getLiveWeatherInfo();
-        List<String> list = EssayUtil.getEssay();
         WxMpTemplateMessage templateMessage = WxMpTemplateMessage.builder()
-                .toUser(OPENID)
-                .templateId(TEMPLATE_ID)
+                .toUser(config.getOpenId())
+                .templateId(config.getTemplateId())
                 .url("https://api.dujin.org/bing/m.php")
                 .build();
 
