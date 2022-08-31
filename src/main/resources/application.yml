@@ -8,5 +8,8 @@ wx:
   config:
     appId: wxfbf0951089dbb3d3
     secret: af9e4d84d7e690c027ab0ba2ed8b8773
+    #pan
     openId: oAHa45s8Tn4as8dkm3XuHgo99u24
+#    openId: oAHa45va5Dx3hQ5xKYfCTjvHOdG0
     templateId: _9uFKE24cDr0nJ6khEDM5pNfwJbNBwY1H6HVdbRhJIY
+    token: 123

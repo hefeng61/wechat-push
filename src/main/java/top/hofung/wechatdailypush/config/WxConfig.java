@@ -5,7 +5,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix = "wechat.config")
+@ConfigurationProperties(prefix = "wx.config")
 @Data
 public class WxConfig {
     private String appId;
@@ -15,4 +15,6 @@ public class WxConfig {
     private String openId;
 
     private String templateId;
+
+    private String token;
 }

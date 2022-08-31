@@ -2,10 +2,8 @@ package top.hofung.wechatdailypush.service.impl;
 
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
-import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
-import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import top.hofung.wechatdailypush.config.WxConfig;
@@ -23,16 +21,14 @@ public class WxTemplateServiceImpl implements WxTemplateService {
     @Resource
     private WxConfig config;
 
+    @Resource
+    WxMpService wxMpService;
+
     @Override
     @Scheduled(cron = "0 0 8 * * ? ")
     public void sendTemplate() {
 
-        //1，配置
-        WxMpDefaultConfigImpl wxStorage = new WxMpDefaultConfigImpl();
-        wxStorage.setAppId(config.getAppId());
-        wxStorage.setSecret(config.getSecret());
-        WxMpService wxMpService = new WxMpServiceImpl();
-        wxMpService.setWxMpConfigStorage(wxStorage);
+//        WxMpService wxMpService = new WxMpServiceImpl();
 
         try {
             String s = wxMpService.getTemplateMsgService().sendTemplateMsg(this.wxMpTemplateMessage());
