@@ -14,6 +14,8 @@ public class WxConfig {
 
     private String openId;
 
+    private String openId1;
+
     private String templateId;
 
     private String token;
