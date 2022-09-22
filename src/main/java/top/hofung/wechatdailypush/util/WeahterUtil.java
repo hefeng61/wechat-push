@@ -17,8 +17,8 @@ public class WeahterUtil {
 
     private static final String WEATHER_API = "https://devapi.qweather.com/v7/weather/3d?key=%s&location=%s";
 
-    public static LiveWeather getLiveWeatherInfo() {
-        String res = HttpUtil.get(String.format(WEATHER_API, KEY, ADCODE));
+    public static LiveWeather getLiveWeatherInfo(String adcode) {
+        String res = HttpUtil.get(String.format(WEATHER_API, KEY, adcode));
         List<LiveWeather> weathers = JSONUtil.parseObj(res).getJSONArray("daily").toList(LiveWeather.class);
         return weathers.get(0);
     }

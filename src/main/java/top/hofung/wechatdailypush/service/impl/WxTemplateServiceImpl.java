@@ -25,35 +25,36 @@ public class WxTemplateServiceImpl implements WxTemplateService {
     WxMpService wxMpService;
 
     @Override
-    @Scheduled(cron = "0 0 8 * * ? ")
+    @Scheduled(cron = "0 40 8 * * ? ")
     public void sendTemplate() {
-
-//        WxMpService wxMpService = new WxMpServiceImpl();
-
         try {
-            String s = wxMpService.getTemplateMsgService().sendTemplateMsg(this.wxMpTemplateMessage());
-            System.out.println(s);
+            String s1 = wxMpService.getTemplateMsgService().sendTemplateMsg(this.wxMpTemplateMessage("oAHa45s8Tn4as8dkm3XuHgo99u24", "盼盼", "101200905"));
+            System.out.println("盼盼--->" + s1);
+            String s2 = wxMpService.getTemplateMsgService().sendTemplateMsg(this.wxMpTemplateMessage("oAHa45va5Dx3hQ5xKYfCTjvHOdG0", "大佬", "101200905"));
+            System.out.println("大佬--->" + s2);
+            String s3 = wxMpService.getTemplateMsgService().sendTemplateMsg(this.wxMpTemplateMessage("oAHa45ur28eiWIdRjCv13sUzIZkY", "成哥", "101200113"));
+            System.out.println("成哥--->" + s3);
         } catch (WxErrorException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    public WxMpTemplateMessage wxMpTemplateMessage() {
+    public WxMpTemplateMessage wxMpTemplateMessage(String openId, String name, String adcode) {
         WxMpTemplateMessage templateMessage = WxMpTemplateMessage.builder()
-                .toUser(config.getOpenId())
+                .toUser(openId)
                 .templateId(config.getTemplateId())
                 .url("https://api.dujin.org/bing/m.php")
                 .build();
 
-        getWeatherTemplate(templateMessage);
+        getWeatherTemplate(templateMessage, name, adcode);
         return templateMessage;
     }
 
-    private void getWeatherTemplate(WxMpTemplateMessage templateMessage) {
-        LiveWeather weather = WeahterUtil.getLiveWeatherInfo();
+    private void getWeatherTemplate(WxMpTemplateMessage templateMessage, String name, String adcode) {
+        LiveWeather weather = WeahterUtil.getLiveWeatherInfo(adcode);
         List<String> list = EssayUtil.getEssay();
-        templateMessage.addData(new WxMpTemplateData("name", "盼盼", "#00BFFF"));
+        templateMessage.addData(new WxMpTemplateData("name", name, "#00BFFF"));
         templateMessage.addData(new WxMpTemplateData("fxDate", weather.getFxDate(), "#00BFFF"));
         templateMessage.addData(new WxMpTemplateData("sunrise", weather.getSunrise(), "#00BFFF"));
         templateMessage.addData(new WxMpTemplateData("sunset", weather.getSunset(), "#00BFFF"));
